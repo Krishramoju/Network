@@ -1,0 +1,7 @@
+<h2>Admin Dashboard</h2>
+<ul>
+  {% for user in users %}
+    <li>{{ user[0] }} - {{ user[1] }}</li>
+  {% endfor %}
+</ul>
+<a href="/chat">Chat</a> | <a href="/logout">Logout</a>
