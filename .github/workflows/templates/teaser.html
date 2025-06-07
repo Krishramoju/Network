@@ -1,0 +1,14 @@
+<h2>Brain Teaser Multiplayer - {{ name }}</h2>
+<p>What is 15 + 6?</p>
+<input id="answer" autocomplete="off"><button onclick="submit()">Submit</button>
+<p id="result"></p>
+<script>
+  function submit() {
+    const val = document.getElementById('answer').value;
+    if (val == '21') {
+      document.getElementById('result').textContent = 'Correct!';
+    } else {
+      document.getElementById('result').textContent = 'Wrong!';
+    }
+  }
+</script>
