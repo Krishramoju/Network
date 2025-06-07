@@ -101,3 +101,43 @@ if __name__ == '__main__':
     con.commit()
     con.close()
     socketio.run(app, debug=True)
+
+players = []
+game_state = {"question": "12 + 9", "answer": "21", "scores": {}}
+
+@socketio.on('join_teaser')
+def handle_join(user):
+    if user not in players:
+        players.append(user)
+    if len(players) == 2:
+        socketio.emit('start_teaser', {"question": game_state["question"]})
+        for p in players:
+            if p not in game_state["scores"]:
+                game_state["scores"][p] = 0
+    else:
+        emit('waiting', 'Waiting for opponent...')
+
+@socketio.on('submit_teaser_answer')
+def handle_answer(data):
+    user = data['user']
+    answer = data['answer'].strip()
+    if answer == game_state["answer"]:
+        game_state["scores"][user] += 1
+        socketio.emit('teaser_result', {
+            "message": f"{user} answered correctly!",
+            "scores": format_scores()
+        })
+        reset_round()
+    else:
+        emit('teaser_result', {
+            "message": f"{user} answered incorrectly!",
+            "scores": format_scores()
+        })
+
+def format_scores():
+    return " | ".join([f"{p}: {s}" for p, s in game_state["scores"].items()])
+
+def reset_round():
+    game_state["question"] = "7 + 8"
+    game_state["answer"] = "15"
+
