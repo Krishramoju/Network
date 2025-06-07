@@ -1,14 +1,39 @@
-<h2>Brain Teaser Multiplayer - {{ name }}</h2>
-<p>What is 15 + 6?</p>
-<input id="answer" autocomplete="off"><button onclick="submit()">Submit</button>
+<h2>Brain Teaser Match - {{ name }}</h2>
+<p id="status">Waiting for opponent...</p>
+<p id="question" style="display:none;"></p>
+<input id="answer" style="display:none;" placeholder="Answer here">
+<button onclick="submit()" id="submitBtn" style="display:none;">Submit</button>
 <p id="result"></p>
+<p id="scoreboard"></p>
+
+<script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
 <script>
+  const socket = io();
+  const user = "{{ name }}";
+
+  socket.emit('join_teaser', user);
+
   function submit() {
-    const val = document.getElementById('answer').value;
-    if (val == '21') {
-      document.getElementById('result').textContent = 'Correct!';
-    } else {
-      document.getElementById('result').textContent = 'Wrong!';
-    }
+    const val = document.getElementById("answer").value;
+    socket.emit('submit_teaser_answer', { user: user, answer: val });
+    document.getElementById("submitBtn").disabled = true;
   }
+
+  socket.on('start_teaser', data => {
+    document.getElementById("question").style.display = "block";
+    document.getElementById("answer").style.display = "inline";
+    document.getElementById("submitBtn").style.display = "inline";
+    document.getElementById("submitBtn").disabled = false;
+    document.getElementById("question").textContent = "Question: " + data.question;
+    document.getElementById("status").textContent = "Match started!";
+  });
+
+  socket.on('teaser_result', data => {
+    document.getElementById("result").textContent = data.message;
+    document.getElementById("scoreboard").textContent = data.scores;
+  });
+
+  socket.on('waiting', msg => {
+    document.getElementById("status").textContent = msg;
+  });
 </script>
