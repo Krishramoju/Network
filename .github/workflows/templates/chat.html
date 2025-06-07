@@ -1,17 +1,19 @@
 <h2>Chat - {{ name }}</h2>
 <ul id="messages"></ul>
 <input id="msg" autocomplete="off"><button onclick="send()">Send</button>
+
 <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
 <script>
   const socket = io();
   function send() {
-    const input = document.getElementById('msg');
-    socket.emit('send_message', input.value);
-    input.value = '';
+    const msg = document.getElementById('msg').value;
+    socket.emit('send_message', msg);
+    document.getElementById('msg').value = '';
   }
+
   socket.on('receive_message', msg => {
-    const li = document.createElement('li');
-    li.textContent = msg;
-    document.getElementById('messages').appendChild(li);
+    const item = document.createElement('li');
+    item.textContent = msg;
+    document.getElementById('messages').appendChild(item);
   });
 </script>
