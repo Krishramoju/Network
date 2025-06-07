@@ -85,10 +85,12 @@ def teaser():
 def logout():
     logout_user()
     return redirect('/')
-
 @socketio.on('send_message')
-def handle_message(data):
-    emit('receive_message', data, broadcast=True)
+def handle_chat(msg):
+    username = session.get('name', 'Unknown')
+    emit('receive_message', f"{username}: {msg}", broadcast=True)
+
+
 
 if __name__ == '__main__':
     con = sqlite3.connect('users.db')
